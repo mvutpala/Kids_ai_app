@@ -299,9 +299,9 @@ function LessonView({ profile, level, onStartQuiz }) {
     setLoading(true);setAiLesson("");
     (async()=>{
       try{
-        const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,messages:[{role:"user",content:`You are a super fun math teacher for kids! Teach "${LEVELS[level].label}" to a ${profile.age}-year-old. Write a SHORT, SILLY, fun lesson (max 120 words) using lots of emojis, a funny real-world example (like pizza, dinosaurs, toys), one worked example, and an encouraging punchline at the end. No markdown. Plain text only.`}]})});
+        const res=await fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:`You are a super fun math teacher for kids! Teach "${LEVELS[level].label}" to a ${profile.age}-year-old. Write a SHORT, SILLY, fun lesson (max 120 words) using lots of emojis, a funny real-world example (like pizza, dinosaurs, toys), one worked example, and an encouraging punchline at the end. No markdown. Plain text only.`})});
         const data=await res.json();
-        setAiLesson(data.content?.[0]?.text||"Let's do some math magic today! ✨");
+        setAiLesson(data.text||"Let's do some math magic today! ✨");
       }catch{setAiLesson("Let's learn math today! 🌟");}
       setLoading(false);
     })();
@@ -345,9 +345,9 @@ function QuizView({ profile, level, onComplete }) {
   const getAiFeedback=async(isCorrect,wasHinted)=>{
     setLoadingFeedback(true);
     try{
-      const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,messages:[{role:"user",content:`Fun math teacher for ${profile.age}-year-old. Question: ${problem.question}, correct: ${isCorrect}, used hints: ${wasHinted}. ONE sentence (max 15 words) of ${isCorrect?"wild celebration":"warm silly encouragement"}. 1-2 emojis. No markdown.`}]})});
+      const res=await fetch("/api/claude",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:`Fun math teacher for ${profile.age}-year-old. Question: ${problem.question}, correct: ${isCorrect}, used hints: ${wasHinted}. ONE sentence (max 15 words) of ${isCorrect?"wild celebration":"warm silly encouragement"}. 1-2 emojis. No markdown.`})});
       const data=await res.json();
-      setAiFeedback(data.content?.[0]?.text||(isCorrect?"You're a math superstar! 🌟":"You've got this, keep going! 💪"));
+      setAiFeedback(data.text||(isCorrect?"You're a math superstar! 🌟":"You've got this, keep going! 💪"));
     }catch{setAiFeedback(isCorrect?"Woohoo! Amazing! 🎉":"You can do it! 💪");}
     setLoadingFeedback(false);
   };
